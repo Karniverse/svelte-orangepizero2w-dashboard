@@ -31,7 +31,7 @@ def get_cpu_temperature():
             temperature = float(output.decode("utf-8").split("\n")[1].strip()) / 10 - 273.15
             return temperature
         except Exception as e:
-            print(f"Error fetching CPU temperature (Windows): {e}")
+            #print(f"Error fetching CPU temperature (Windows): {e}")
             return 0
     else:
         print("Unsupported OS for CPU temperature")
@@ -61,15 +61,15 @@ def get_cpu_freq():
 # System stats endpoint
 @app.get("/api/stats")
 def get_stats():
-    print("Fetching system stats...")
+    #print("Fetching system stats...")
     cpu_temperature = get_cpu_temperature()
-    print(f"CPU Temperature: {cpu_temperature}°C")
+    #print(f"CPU Temperature: {cpu_temperature}°C")
     cpu_usage = psutil.cpu_percent(interval=0.1)
-    print(f"CPU Usage: {cpu_usage}%")
+    #print(f"CPU Usage: {cpu_usage}%")
     ram = psutil.virtual_memory()
-    print(f"RAM Used: {ram.used} bytes")
+    #print(f"RAM Used: {ram.used} bytes")
     disk = psutil.disk_usage("/")
-    print(f"Disk Used: {disk.used} bytes")
+    #print(f"Disk Used: {disk.used} bytes")
 
     return {
         "cpu": {
