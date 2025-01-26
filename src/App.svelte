@@ -33,8 +33,8 @@
   <p class="read-the-docs">Click on the Vite and Svelte logos to learn more</p-->
   <h1>Linux Dashboard</h1>
   <SystemStats />
-  <Terminal />
-  <FileExplorer />
+  <!--Terminal />
+  <FileExplorer /-->
 </main>
 
 <style>
