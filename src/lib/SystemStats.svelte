@@ -1,36 +1,191 @@
 <script>
-    let stats = {
-        cpu: { usage: 0 },
-        ram: { percent: 0 },
-        disk: { percent: 0 },
+    import LineChart from "../components/LineChart.svelte";
+    import PieChart from "../components/PieChart.svelte";
+    import { onMount } from "svelte";
+
+    let cpuData = {
+        labels: [],
+        datasets: [
+            {
+                label: "CPU Usage (%)",
+                data: [],
+                borderColor: "rgba(75, 192, 192, 1)",
+                fill: false,
+                tension: 0.5,
+            },
+        ],
     };
 
+    let memoryData = {
+        labels: [],
+        datasets: [
+            {
+                label: "Memory Usage (%)",
+                data: [],
+                borderColor: "rgba(153, 102, 255, 1)",
+                fill: false,
+                tension: 0.5,
+            },
+        ],
+    };
+
+    let networkData = {
+        labels: [],
+        datasets: [
+            {
+                label: "Upload Speed (KB/s)",
+                data: [],
+                borderColor: "rgba(255, 99, 130, 1)", // Red line
+                backgroundColor: "rgba(255, 99, 130, 0.2)",
+                fill: false,
+                tension: 0.5,
+            },
+            {
+                label: "Download Speed (KB/s)",
+                data: [],
+                borderColor: "rgba(54, 162, 235, 1)", // Blue line
+                backgroundColor: "rgba(54, 162, 235, 0.2)",
+                fill: false,
+                tension: 0.5,
+            },
+        ],
+    };
+    let diskData = {
+        labels: ["Used (%)", "Free (%)"], // The two categories for the pie chart
+        datasets: [
+            {
+                data: [], // Values for used and free space
+                backgroundColor: [
+                    "rgba(255, 159, 64, 1)",
+                    "rgba(75, 192, 192, 1)",
+                ], // Colors for each segment
+            },
+        ],
+    };
+
+    let error = null;
+
     async function fetchStats() {
-        const response = await fetch("http://localhost:7000/api/stats");
-        stats = await response.json();
+        try {
+            const response = await fetch(
+                //"http://orangepizero2w.local:7000/api/stats",
+                "http://localhost:7000/api/stats",
+            );
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const stats = await response.json();
+            console.log("Stats received:", stats);
+
+            // Update CPU data
+            cpuData.labels.push(new Date().toLocaleTimeString());
+            cpuData.datasets[0].data.push(stats.cpu.usage);
+            if (cpuData.labels.length > 10) {
+                cpuData.labels.shift();
+                cpuData.datasets[0].data.shift();
+            }
+
+            // Update Memory data
+            memoryData.labels.push(new Date().toLocaleTimeString());
+            memoryData.datasets[0].data.push(stats.ram.percent);
+            if (memoryData.labels.length > 10) {
+                memoryData.labels.shift();
+                memoryData.datasets[0].data.shift();
+            }
+
+            // Update Network data
+            networkData.labels.push(new Date().toLocaleTimeString());
+            networkData.datasets[0].data.push(
+                (stats.network.upload_speed / 1024).toFixed(2),
+            );
+            networkData.datasets[1].data.push(
+                (stats.network.download_speed / 1024).toFixed(2),
+            );
+            if (networkData.labels.length > 10) {
+                networkData.labels.shift();
+                networkData.datasets[0].data.shift();
+                networkData.datasets[1].data.shift();
+            }
+
+            // Update Disk data for Pie chart
+            const usedDisk = (
+                (stats.disk.used / stats.disk.total) *
+                100
+            ).toFixed(1);
+            const freeDisk = (
+                (stats.disk.free / stats.disk.total) *
+                100
+            ).toFixed(1);
+            diskData.datasets[0].data = [usedDisk, freeDisk];
+
+            if (diskData.labels.length > 10) {
+                diskData.labels.shift();
+            }
+
+            // Force Svelte to react to data changes
+            cpuData = { ...cpuData };
+            memoryData = { ...memoryData };
+            networkData = { ...networkData };
+            diskData = { ...diskData };
+        } catch (err) {
+            error = err.message;
+            console.error("Error fetching stats:", err);
+        }
     }
-    // Fetch stats every 1 seconds
-    setInterval(fetchStats, 1000);
-    fetchStats();
+
+    // Fetch stats every second
+    onMount(() => {
+        const interval = setInterval(fetchStats, 1000);
+        return () => clearInterval(interval);
+    });
 </script>
 
-<main>
-    <h1>System Stats</h1>
-    <p>CPU Usage: {stats.cpu.usage}%</p>
-    <p>Memory Usage: {stats.ram.percent}%</p>
-    <p>Disk Usage: {stats.disk.percent}%</p>
-</main>
+<div class="dashboard">
+    <h1>System Performance Dashboard</h1>
+
+    {#if error}
+        <p style="color: red;">Error: {error}</p>
+    {:else}
+        <div class="dashboard">
+            <div class="chart-container">
+                <h2>CPU Usage</h2>
+                <LineChart
+                    id="cpuChart"
+                    data={cpuData}
+                    options={{ responsive: true }}
+                />
+            </div>
+
+            <div class="chart-container">
+                <h2>Memory Usage</h2>
+                <LineChart
+                    id="memoryChart"
+                    data={memoryData}
+                    options={{ responsive: true }}
+                />
+            </div>
+
+            <div class="chart-container">
+                <h2>Network Usage</h2>
+                <LineChart
+                    id="networkChart"
+                    data={networkData}
+                    options={{ responsive: true }}
+                />
+            </div>
+
+            <div class="chart-container">
+                <h2>Disk Usage</h2>
+                <PieChart
+                    id="diskChart"
+                    data={diskData}
+                    options={{ responsive: true }}
+                />
+            </div>
+        </div>
+    {/if}
+</div>
 
 <style>
-    .stats-container {
-        display: flex;
-        gap: 20px;
-        margin-bottom: 20px;
-    }
-    /*.stat {
-        background: #f4f4f4;
-        padding: 10px;
-        border-radius: 5px;
-        flex: 1;
-    }*/
+    @import "../app.css";
 </style>

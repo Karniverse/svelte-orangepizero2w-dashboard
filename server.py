@@ -58,6 +58,22 @@ def get_cpu_freq():
         print("Unsupported OS for CPU frequency")
         return 0
 
+#calculating network usuage
+# Store the previous network counters globally
+previous_counters = psutil.net_io_counters()
+
+# Interval to calculate network usage in seconds
+NETWORK_UPDATE_INTERVAL = 1  # 1 second
+
+
+def calculate_network_usage():
+    global previous_counters
+    current_counters = psutil.net_io_counters()
+    upload_speed = (current_counters.bytes_sent - previous_counters.bytes_sent) / NETWORK_UPDATE_INTERVAL
+    download_speed = (current_counters.bytes_recv - previous_counters.bytes_recv) / NETWORK_UPDATE_INTERVAL
+    previous_counters = current_counters  # Update the previous counters
+    return upload_speed, download_speed
+
 # System stats endpoint
 @app.get("/api/stats")
 def get_stats():
@@ -68,12 +84,15 @@ def get_stats():
     #print(f"CPU Usage: {cpu_usage}%")
     ram = psutil.virtual_memory()
     #print(f"RAM Used: {ram.used} bytes")
+    upload_speed, download_speed = calculate_network_usage()
+    #print(f"Netwrok Usage: {network.used} bytes")
     disk = psutil.disk_usage("/")
     #print(f"Disk Used: {disk.used} bytes")
 
+
     return {
         "cpu": {
-            "temperature": cpu_temperature,
+            #"temperature": cpu_temperature,
             "usage": cpu_usage,
             "frequency": get_cpu_freq(),
         },
@@ -82,8 +101,13 @@ def get_stats():
             "total": ram.total,
             "percent": ram.percent,
         },
+        "network": {
+            "upload_speed": upload_speed,  # Bytes/sec
+            "download_speed": download_speed,  # Bytes/sec
+        },
         "disk": {
             "used": disk.used,
+            "free": disk.free,
             "total": disk.total,
             "percent": disk.percent,
         },

@@ -13,11 +13,50 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.dashboard {
+  display: grid;
+  /*grid-template-columns: repeat(auto-fit, minmax(1300px, 1fr));*/
+  grid-template-columns: repeat(3, 1fr);
+  /* 3 columns of equal width */
+  gap: 10px;
+  /* Space between charts */
+  /*max-width: 1200px;*/
+  max-width: calc(100% - 140px);
+  margin: 0 auto;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Make the disk chart container larger */
+#diskChart {
+  grid-column: span 1;
+  /* Make it fit within its own column */
+  margin-bottom: 20px;
+}
+
+h1,
+h2 {
+  color: #333;
+  text-align: center;
+}
+
+
+
 a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -57,9 +96,11 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -70,10 +111,38 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
+  }
+}
+
+
+/* If you want the grid to be flexible and grow in case you add more charts */
+@media screen and (max-width: 1200px) {
+  .dashboard {
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 columns on smaller screens */
+  }
+
+  #diskChart {
+    grid-column: span 2;
+    /* Ensure disk chart spans the 2 columns on smaller screens */
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+    /* 1 column on very small screens */
+  }
+
+  #diskChart {
+    grid-column: span 1;
+    /* Disk chart will span only 1 column */
   }
 }
