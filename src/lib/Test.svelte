@@ -1,7 +1,7 @@
 <script>
     import LineChart from "../components/LineChart.svelte";
     import PieChart from "../components/PieChart.svelte";
-    //import { stats, error } from "./apidata.svelte";
+    import { stats, error } from "./stores.js";
     import { onMount } from "svelte";
 
     let cpuData = {
@@ -51,6 +51,7 @@
             },
         ],
     };
+
     let diskData = {
         labels: ["Used (%)", "Free (%)"], // The two categories for the pie chart
         datasets: [
@@ -64,24 +65,14 @@
         ],
     };
 
-    let error = null;
     let sysuptime;
 
-    async function fetchStats() {
-        try {
-            const response = await fetch(
-                //"http://orangepizero2w.local:7000/api/stats",
-                "http://localhost:7000/api/stats",
-            );
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const stats = await response.json();
-            console.log("Stats received:", stats);
-
+    // Subscribe to the stats store and update chart data whenever stats change
+    $: {
+        if ($stats) {
             // Update CPU data
             cpuData.labels.push(new Date().toLocaleTimeString());
-            cpuData.datasets[0].data.push(stats.cpu.usage);
+            cpuData.datasets[0].data.push($stats.cpu.usage);
             if (cpuData.labels.length > 10) {
                 cpuData.labels.shift();
                 cpuData.datasets[0].data.shift();
@@ -89,7 +80,7 @@
 
             // Update Memory data
             memoryData.labels.push(new Date().toLocaleTimeString());
-            memoryData.datasets[0].data.push(stats.ram.percent);
+            memoryData.datasets[0].data.push($stats.ram.percent);
             if (memoryData.labels.length > 10) {
                 memoryData.labels.shift();
                 memoryData.datasets[0].data.shift();
@@ -98,10 +89,10 @@
             // Update Network data
             networkData.labels.push(new Date().toLocaleTimeString());
             networkData.datasets[0].data.push(
-                (stats.network.upload_speed / 1024).toFixed(2),
+                ($stats.network.upload_speed / 1024).toFixed(2),
             );
             networkData.datasets[1].data.push(
-                (stats.network.download_speed / 1024).toFixed(2),
+                ($stats.network.download_speed / 1024).toFixed(2),
             );
             if (networkData.labels.length > 10) {
                 networkData.labels.shift();
@@ -111,11 +102,11 @@
 
             // Update Disk data for Pie chart
             const usedDisk = (
-                (stats.disk.used / stats.disk.total) *
+                ($stats.disk.used / $stats.disk.total) *
                 100
             ).toFixed(1);
             const freeDisk = (
-                (stats.disk.free / stats.disk.total) *
+                ($stats.disk.free / $stats.disk.total) *
                 100
             ).toFixed(1);
             diskData.datasets[0].data = [usedDisk, freeDisk];
@@ -124,36 +115,25 @@
                 diskData.labels.shift();
             }
 
-            //String sysuptime = stats.Uptime.uptime;
-
-            sysuptime = stats.Uptime.uptime;
-
-            //console.log(stats.Uptime.uptime);
+            // Update system uptime
+            sysuptime = $stats.Uptime.uptime;
 
             // Force Svelte to react to data changes
             cpuData = { ...cpuData };
             memoryData = { ...memoryData };
             networkData = { ...networkData };
             diskData = { ...diskData };
-        } catch (err) {
-            error = err.message;
-            console.error("Error fetching stats:", err);
+
+            //console.log("Updated stats:", stats);
         }
     }
-
-    // Fetch stats every second
-    onMount(() => {
-        const interval = setInterval(fetchStats, 1000);
-        return () => clearInterval(interval);
-    });
 </script>
 
 <div class="dashboard">
     <h1>System Performance Dashboard</h1>
-    <!--p>{systemuptime}</p-->
 
-    {#if error}
-        <p style="color: red;">Error: {error}</p>
+    {#if $error}
+        <p style="color: red;">Error: {$error}</p>
     {:else}
         <div class="dashboard">
             <div class="chart-container">

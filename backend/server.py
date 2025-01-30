@@ -74,11 +74,16 @@ def calculate_network_usage():
     previous_counters = current_counters  # Update the previous counters
     return upload_speed, download_speed
 
+def timeformatter(seconds):
+    min, sec = divmod(seconds, 60)
+    hour, min = divmod(min, 60)
+    return '%d:%02d:%02d' % (hour, min, sec)
+
 # System stats endpoint
 @app.get("/api/stats")
 def get_stats():
     #print("Fetching system stats...")
-    cpu_temperature = get_cpu_temperature()
+    #cpu_temperature = get_cpu_temperature()
     #print(f"CPU Temperature: {cpu_temperature}°C")
     cpu_usage = psutil.cpu_percent(interval=0.1)
     #print(f"CPU Usage: {cpu_usage}%")
@@ -88,6 +93,7 @@ def get_stats():
     #print(f"Netwrok Usage: {network.used} bytes")
     disk = psutil.disk_usage("/")
     #print(f"Disk Used: {disk.used} bytes")
+    uptime = timeformatter(time.time() - psutil.boot_time())
 
 
     return {
@@ -111,6 +117,9 @@ def get_stats():
             "total": disk.total,
             "percent": disk.percent,
         },
+        "Uptime": {
+            "uptime":uptime,
+        }
     }
 
 # Run the server
