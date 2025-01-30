@@ -82,8 +82,8 @@ Created by **Karniverse**. Reach out for collaboration or suggestions!
 
 
 
-code references:
+### code references:
 
 
-https://stackoverflow.com/questions/42471475/fastest-way-to-get-system-uptime-in-python-in-linux
-https://www.geeksforgeeks.org/python-program-to-convert-seconds-into-hours-minutes-and-seconds/
+- https://stackoverflow.com/questions/42471475/fastest-way-to-get-system-uptime-in-python-in-linux
+- https://www.geeksforgeeks.org/python-program-to-convert-seconds-into-hours-minutes-and-seconds/
