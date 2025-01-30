@@ -34,7 +34,7 @@ A lightweight Svelte-based system monitoring dashboard for the Orange Pi Zero 2W
 2. Create and activate a virtual environment:
    ```sh
    python -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate.bat`
    ```
 3. Install required dependencies:
    ```sh
@@ -83,5 +83,7 @@ Created by **Karniverse**. Reach out for collaboration or suggestions!
 
 
 code references:
+
+
 https://stackoverflow.com/questions/42471475/fastest-way-to-get-system-uptime-in-python-in-linux
 https://www.geeksforgeeks.org/python-program-to-convert-seconds-into-hours-minutes-and-seconds/
