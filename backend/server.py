@@ -14,15 +14,7 @@ cpu_speed = cpu_info.get('hz_advertised_friendly') if cpu_info.get('hz_advertise
 # Get number of physical and logical CPU cores
 physical_cores = psutil.cpu_count(logical=False)  # Physical cores
 logical_cores = psutil.cpu_count(logical=True) 
-#print("Fetching system stats...")
-#cpu_temperature = get_cpu_temperature()
-#print(f"CPU Temperature: {cpu_temperature}°C")
-cpu_usage = psutil.cpu_percent(interval=0.1)
-#print(f"CPU Usage: {cpu_usage}%")
-ram = psutil.virtual_memory()
-#print(f"RAM Used: {ram.used} bytes")
-diskusage = psutil.disk_usage("/")
-diskio=psutil.disk_io_counters()
+
 
 # Enable CORS
 app.add_middleware(
@@ -82,6 +74,16 @@ previous_counters = psutil.net_io_counters()
 # Interval to calculate network usage in seconds
 NETWORK_UPDATE_INTERVAL = 1  # 1 second
 
+# Store the previous disk counters globally
+previous_disk_counters = psutil.disk_io_counters()
+
+def calculate_disk_usage():
+    global previous_disk_counters
+    current_disk_counters = psutil.disk_io_counters()
+    read_speed = (current_disk_counters.read_bytes - previous_disk_counters.read_bytes)
+    write_speed = (current_disk_counters.write_bytes - previous_disk_counters.write_bytes)
+    previous_disk_counters = current_disk_counters  # Update the previous counters
+    return read_speed, write_speed
 
 def calculate_network_usage():
     global previous_counters
@@ -96,13 +98,32 @@ def timeformatter(seconds):
     hour, min = divmod(min, 60)
     return '%d:%02d:%02d' % (hour, min, sec)
 
+# Get top 5 processes by CPU usage
+def get_top_processes():
+    processes = [(p.info['pid'], p.info['name'], p.info['cpu_percent']) 
+                 for p in psutil.process_iter(['pid', 'name', 'cpu_percent'])]
+    processes.sort(key=lambda x: x[2], reverse=True)  # Sort by CPU usage
+    return processes[:5]  # Return top 5 processes
+
 # System stats endpoint
 @app.get("/api/stats")
 def get_stats():
+    #print("Fetching system stats...")
+    # #cpu_temperature = get_cpu_temperature()
+    # #print(f"CPU Temperature: {cpu_temperature}°C")
+    cpu_usage = psutil.cpu_percent(interval=0.1)
+    #print(f"CPU Usage: {cpu_usage}%")
+    ram = psutil.virtual_memory()
+    #print(f"RAM Used: {ram.used} bytes")
+    diskusage = psutil.disk_usage("/")
+    read_speed, write_speed = calculate_disk_usage()
     upload_speed, download_speed = calculate_network_usage()
     #print(f"Netwrok Usage: {network.used} bytes")
     # #print(f"Disk Used: {disk.used} bytes")
     uptime = timeformatter(time.time() - psutil.boot_time())
+    #diskio=psutil.disk_io_counters()
+
+    top_processes = get_top_processes()  # Get top 5 processes
     return {
         "cpu": {
             #"temperature": cpu_temperature,
@@ -123,8 +144,8 @@ def get_stats():
             "free": diskusage.free,
             "total": diskusage.total,
             "percent": diskusage.percent,
-            "diskrbytes":diskio.read_bytes,
-            "diskwbytes":diskio.write_bytes,
+            "diskrbytes":read_speed,
+            "diskwbytes":write_speed,
         },
         "systeminfo":{
             "processor":cpu_name,
@@ -136,7 +157,11 @@ def get_stats():
             "version":platform.release(),
             "uptime":uptime,
             #"tmp":cpu_info,
-        }
+        },
+        
+        "top_processes": [
+            {"pid": p[0], "name": p[1], "cpu_percent": p[2]} for p in top_processes
+        ]
     }
 
 # Run the server

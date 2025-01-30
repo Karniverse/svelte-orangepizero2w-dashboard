@@ -12,7 +12,7 @@
     function fetchStats() {
         if ($stats && $stats.systeminfo) {
             Systeminfo = $stats.systeminfo;
-            //console.log(Systeminfo);
+            //console.log($stats.top_processes);
         }
         Systeminfo = { ...Systeminfo };
     }
@@ -26,6 +26,7 @@
         <!-- Show a loading message if stats are not available -->
     {:else}
         <div>
+            <h2>System Monitoring Dashboard</h2>
             <div class="infocontainer">
                 <h4 class="label">Processor</h4>
                 <p>{Systeminfo.processor}</p>
@@ -50,6 +51,19 @@
         display: grid;
         grid-template-columns: 1fr 2fr; /* Labels take 1 part, values take 2 parts */
         gap: 10px;
+        align-items: center;
+        max-width: 500px; /* Adjust width */
+        margin: auto; /* Center it */
+        padding: 20px;
+        background: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        color: #333333;
+    }
+    h2 {
+        /*display: grid;
+        grid-template-columns: 1fr 2fr; /* Labels take 1 part, values take 2 parts */
+        /*gap: 10px;*/
         align-items: center;
         max-width: 500px; /* Adjust width */
         margin: auto; /* Center it */

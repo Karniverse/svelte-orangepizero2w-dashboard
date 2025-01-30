@@ -2,6 +2,7 @@
     import { stats, error } from "../lib/apidata.js";
     import { onMount } from "svelte";
     import PieChart from "../lib/charts/PieChart.svelte";
+    import BarChart from "../lib/charts/BarChart.svelte";
 
     let diskData = {
         labels: ["Used (%)", "Free (%)"],
@@ -16,15 +17,31 @@
         ],
     };
 
+    let diskIOData = {
+        labels: ["Read (KB)", "Write (KB)"],
+        datasets: [
+            {
+                label: "Disk I/O",
+                data: [0, 0],
+                backgroundColor: [
+                    "rgba(54, 162, 235, 1)", // Blue for read
+                    "rgba(255, 99, 132, 1)", // Red for write
+                ],
+                borderWidth: 0,
+            },
+        ],
+    };
+
+    let yAxisMax = 1500; // Default max value for the Y-axis
+
     onMount(() => {
         const interval = setInterval(fetchStats, 1000);
         return () => clearInterval(interval);
     });
 
     function fetchStats() {
-        // Only attempt to fetch data if stats is populated
         if ($stats && $stats.cpu && $stats.ram) {
-            // Update Disk data for Pie chart
+            // Update Pie Chart Data
             const usedDisk = (
                 ($stats.disk.used / $stats.disk.total) *
                 100
@@ -34,8 +51,22 @@
                 100
             ).toFixed(1);
             diskData.datasets[0].data = [usedDisk, freeDisk];
+
+            // Update Bar Chart Data
+            const readBytes = $stats.disk.diskrbytes / Math.pow(1024, 1);
+            const writeBytes = $stats.disk.diskwbytes / Math.pow(1024, 1);
+
+            // Dynamically adjust the Y-axis max value based on the data
+            yAxisMax = Math.max(readBytes, writeBytes) * 1.2; // Set max to 120% of the highest value
+
+            diskIOData.datasets[0].data = [readBytes, writeBytes];
+
+            // Trigger Svelte reactivity
+            diskData = { ...diskData };
+            diskIOData = { ...diskIOData };
+            //yAxisMax = { ...yAxisMax };
+            //console.log("Stats data:", $stats.disk.diskrbytes);
         }
-        diskData = { ...diskData };
     }
 </script>
 
@@ -44,7 +75,6 @@
         <p style="color: red;">Error: {$error}</p>
     {:else if !$stats || !$stats.cpu || !$stats.ram}
         <p>Loading stats...</p>
-        <!-- Show a loading message if stats are not available -->
     {:else}
         <div class="chart-container">
             <h2>Disk Usage</h2>
@@ -54,14 +84,40 @@
                 options={{ responsive: true }}
             />
         </div>
+
+        <div class="chart-container">
+            <h2>Disk Read/Write</h2>
+            <BarChart
+                id="diskIOChart"
+                data={diskIOData}
+                options={{
+                    responsive: true,
+                    scales: { y: { beginAtZero: true, max: yAxisMax } },
+                }}
+            />
+        </div>
     {/if}
 </div>
 
 <style>
+    .charts-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
     .chart-container {
         background: #fff;
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        flex: 1;
+        min-width: 280px; /* Ensure responsiveness */
+        max-width: 48%; /* Adjust max-width for two charts side-by-side */
+    }
+
+    h2 {
+        text-align: center;
     }
 </style>

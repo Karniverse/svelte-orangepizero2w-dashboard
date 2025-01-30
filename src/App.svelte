@@ -2,7 +2,7 @@
   import SystemStats from "./components/SystemStats.svelte";
   import SystemInfo from "./components/SystemInfo.svelte";
   import Diskinfo from "./components/Diskstats.svelte";
-  //import Test from "./components/Test.svelte";
+  //import Test from "../temp/Test.svelte";
   //import Test2 from "./components/test2.svelte";
   //import Test3 from "./components/test3.svelte";
   //import Apidata from "./components/apidata.svelte";
