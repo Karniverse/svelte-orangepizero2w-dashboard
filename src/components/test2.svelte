@@ -1,8 +1,8 @@
 <script>
-    import { stats, error } from "./apidata.js";
+    import { stats, error } from "../lib/apidata.js";
     import { onMount } from "svelte";
-    import LineChart from "../components/LineChart.svelte";
-    import PieChart from "../components/PieChart.svelte";
+    import LineChart from "../lib/charts/LineChart.svelte";
+    import PieChart from "../lib/charts/PieChart.svelte";
 
     let cpuData = {
         labels: [],
