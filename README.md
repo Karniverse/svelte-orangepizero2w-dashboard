@@ -4,6 +4,8 @@
 
 A lightweight Svelte-based system monitoring dashboard for the Orange Pi Zero 2W. This dashboard provides real-time insights into CPU, memory, network usage, disk statistics, and basic system information. The backend is powered by Python's `psutil` library.
 
+_NOTE: i made this keeping orangepi zero 2w in mind, but this should work with any SBC or any machine like your pc or a vps_
+
 **## Features**
 
 - ****CPU Monitoring****: View real-time CPU usage and temperature.
