@@ -1,0 +1,7 @@
+FastAPI
+CORSMiddleware
+subprocess
+psutil
+time
+platform
+cpuinfo

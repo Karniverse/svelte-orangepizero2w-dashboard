@@ -4,8 +4,25 @@ import subprocess
 import psutil
 import time
 import platform
+import cpuinfo
 
 app = FastAPI()
+system = platform.system()
+cpu_info = cpuinfo.get_cpu_info()
+cpu_name = cpu_info.get('brand_raw', 'Unknown CPU')  # Get the human-readable CPU name
+cpu_speed = cpu_info.get('hz_advertised_friendly') if cpu_info.get('hz_advertised_friendly') else "Unknown"
+# Get number of physical and logical CPU cores
+physical_cores = psutil.cpu_count(logical=False)  # Physical cores
+logical_cores = psutil.cpu_count(logical=True) 
+#print("Fetching system stats...")
+#cpu_temperature = get_cpu_temperature()
+#print(f"CPU Temperature: {cpu_temperature}°C")
+cpu_usage = psutil.cpu_percent(interval=0.1)
+#print(f"CPU Usage: {cpu_usage}%")
+ram = psutil.virtual_memory()
+#print(f"RAM Used: {ram.used} bytes")
+diskusage = psutil.disk_usage("/")
+diskio=psutil.disk_io_counters()
 
 # Enable CORS
 app.add_middleware(
@@ -17,7 +34,7 @@ app.add_middleware(
 
 # Cross-platform CPU temperature
 def get_cpu_temperature():
-    system = platform.system()
+    #system = platform.system()
     if system == "Linux":
         try:
             output = subprocess.check_output("cat /sys/class/thermal/thermal_zone0/temp", shell=True)
@@ -39,7 +56,7 @@ def get_cpu_temperature():
 
 # Cross-platform CPU frequency
 def get_cpu_freq():
-    system = platform.system()
+    #system = platform.system()
     if system == "Linux":
         try:
             output = subprocess.check_output("vcgencmd measure_clock arm | cut -d '=' -f 2", shell=True)
@@ -82,20 +99,10 @@ def timeformatter(seconds):
 # System stats endpoint
 @app.get("/api/stats")
 def get_stats():
-    #print("Fetching system stats...")
-    #cpu_temperature = get_cpu_temperature()
-    #print(f"CPU Temperature: {cpu_temperature}°C")
-    cpu_usage = psutil.cpu_percent(interval=0.1)
-    #print(f"CPU Usage: {cpu_usage}%")
-    ram = psutil.virtual_memory()
-    #print(f"RAM Used: {ram.used} bytes")
     upload_speed, download_speed = calculate_network_usage()
     #print(f"Netwrok Usage: {network.used} bytes")
-    disk = psutil.disk_usage("/")
-    #print(f"Disk Used: {disk.used} bytes")
+    # #print(f"Disk Used: {disk.used} bytes")
     uptime = timeformatter(time.time() - psutil.boot_time())
-
-
     return {
         "cpu": {
             #"temperature": cpu_temperature,
@@ -112,13 +119,23 @@ def get_stats():
             "download_speed": download_speed,  # Bytes/sec
         },
         "disk": {
-            "used": disk.used,
-            "free": disk.free,
-            "total": disk.total,
-            "percent": disk.percent,
+            "used": diskusage.used,
+            "free": diskusage.free,
+            "total": diskusage.total,
+            "percent": diskusage.percent,
+            "diskrbytes":diskio.read_bytes,
+            "diskwbytes":diskio.write_bytes,
         },
-        "Uptime": {
+        "systeminfo":{
+            "processor":cpu_name,
+            "cpuspeed":cpu_speed,
+            "corecount": physical_cores,
+            "threadcount": logical_cores,
+            "machinename":platform.node(),
+            "platform":system,
+            "version":platform.release(),
             "uptime":uptime,
+            #"tmp":cpu_info,
         }
     }
 

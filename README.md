@@ -1,51 +1,78 @@
-# Svelte Linux Dashboard for Orange Pi Zero 2W
+## THIS IS IN ACTIVE DEVELOPEMENT..
+
+**# Svelte Linux Dashboard for Orange Pi Zero 2W**
 
 A lightweight Svelte-based system monitoring dashboard for the Orange Pi Zero 2W. This dashboard provides real-time insights into CPU, memory, network usage, disk statistics, and basic system information. The backend is powered by Python's `psutil` library.
 
-## Features
+**## Features**
 
-- **CPU Monitoring**: View real-time CPU usage and temperature.
-- **Memory Usage**: Track available and used RAM.
-- **Network Statistics**: Monitor upload/download speeds and active connections.
-- **Disk Usage**: Display available and used disk space.
-- **Basic System Info**: Get details about the system, including OS version and uptime.
+- ****CPU Monitoring****: View real-time CPU usage and temperature.
+- ****Memory Usage****: Track available and used RAM.
+- ****Network Statistics****: Monitor upload/download speeds and active connections.
+- ****Disk Usage****: Display available and used disk space.
+- ****Basic System Info****: Get details about the system, including OS version and uptime.
 
-## Tech Stack
+**## Tech Stack**
 
-- **Frontend**: Svelte (for a lightweight and reactive UI)
-- **Backend**: Python with `psutil` (for fetching system stats)
-- **Server**: FastAPI (serves API endpoints for frontend data retrieval)
+- ****Frontend****: Svelte (for a lightweight and reactive UI)
+- ****Backend****: Python with `psutil` (for fetching system stats)
+- ****Server****: FastAPI (serves API endpoints for frontend data retrieval)
 
-## Installation & Setup
+**## Installation & Setup**
 
-### Prerequisites
+**### Prerequisites**
 
 - Orange Pi Zero 2W (or similar SBC running Linux)
 - Python 3 installed
 - Node.js and npm installed
 
-### Backend Setup
-
+**### Initialize**
 1. Clone the repository:
    ```sh
    git clone https://github.com/Karniverse/svelte-orangepizero2w-dashboard.git
    cd orangepi-dashboard/backend
    ```
-2. Create and activate a virtual environment:
+
+**### Backend Setup**
+
+
+1. Create and activate a virtual environment:
    ```sh
    python -m venv venv
    source venv/bin/activate  # On Windows use `venv\Scripts\activate.bat`
    ```
-3. Install required dependencies:
+2. Install required dependencies:
    ```sh
-   pip install fastapi psutil
+   pip install -r requirements.txt
    ```
-4. Run the backend server:
+3. Run the backend server:
    ```sh
    python backend/server.py
    ```
 
-### Frontend Setup
+_NOTE: you can also your use own backend api. you just need to change the "http://localhost:7000/api/stats" in ./src/lib/apidata.js. and the json data from the backend should be similar like this_
+
+<pre>
+{
+  "cpu": {
+    "usage": 10.6,
+    "frequency": 3801
+  },
+  "systeminfo": {
+    "processor": "Intel(R) Core(TM) i7-10700KF CPU @ 3.80GHz",
+    "cpuspeed": "3.8000 GHz",
+    "corecount": 8,
+    "threadcount": 16,
+    "machinename": "Ronald",
+    "platform": "Windows",
+    "version": "10",
+    "uptime": "8:56:08"
+  }
+}
+</pre>
+
+
+**### Frontend Setup**
 
 1. Install dependencies:
    ```sh
@@ -55,34 +82,33 @@ A lightweight Svelte-based system monitoring dashboard for the Orange Pi Zero 2W
    ```sh
    npm run dev
    ```
-
-## Usage
+**## Usage**
 
 - Access the dashboard via your browser at `http://localhost:5173/`.
 - Ensure the backend server is running to fetch system statistics.
 
-## Roadmap
+**## Roadmap**
 
 - [ ] Add historical data tracking
 - [ ] Implement dark mode
 - [ ] Expand support for additional SBCs
 - [ ] Create a Docker container for easier deployment
 
-## Contributing
+**## Contributing**
 
 Feel free to fork and submit pull requests to improve the project!
 
-## License
+**## License**
 
 This project is licensed under the MIT License.
 
-## Author
+**## Author**
 
-Created by **Karniverse**. Reach out for collaboration or suggestions!
+Created by ****Karniverse****. Reach out for collaboration or suggestions!
 
 
 
-### code references:
+**### code references:**
 
 
 - https://stackoverflow.com/questions/42471475/fastest-way-to-get-system-uptime-in-python-in-linux
