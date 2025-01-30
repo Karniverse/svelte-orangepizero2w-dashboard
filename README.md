@@ -1,47 +1,87 @@
-# Svelte + Vite
+# Svelte Linux Dashboard for Orange Pi Zero 2W
 
-This template should help get you started developing with Svelte in Vite.
+A lightweight Svelte-based system monitoring dashboard for the Orange Pi Zero 2W. This dashboard provides real-time insights into CPU, memory, network usage, disk statistics, and basic system information. The backend is powered by Python's `psutil` library.
 
-## Recommended IDE Setup
+## Features
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+- **CPU Monitoring**: View real-time CPU usage and temperature.
+- **Memory Usage**: Track available and used RAM.
+- **Network Statistics**: Monitor upload/download speeds and active connections.
+- **Disk Usage**: Display available and used disk space.
+- **Basic System Info**: Get details about the system, including OS version and uptime.
 
-## Need an official Svelte framework?
+## Tech Stack
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+- **Frontend**: Svelte (for a lightweight and reactive UI)
+- **Backend**: Python with `psutil` (for fetching system stats)
+- **Server**: FastAPI (serves API endpoints for frontend data retrieval)
 
-## Technical considerations
+## Installation & Setup
 
-**Why use this over SvelteKit?**
+### Prerequisites
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+- Orange Pi Zero 2W (or similar SBC running Linux)
+- Python 3 installed
+- Node.js and npm installed
 
-This template contains as little as possible to get started with Vite + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+### Backend Setup
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/Karniverse/svelte-orangepizero2w-dashboard.git
+   cd orangepi-dashboard/backend
+   ```
+2. Create and activate a virtual environment:
+   ```sh
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   ```
+3. Install required dependencies:
+   ```sh
+   pip install fastapi psutil
+   ```
+4. Run the backend server:
+   ```sh
+   python backend/server.py
+   ```
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
+### Frontend Setup
 
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
+1. Install dependencies:
+   ```sh
+   npm install
+   ```
+2. Start the Svelte app:
+   ```sh
+   npm run dev
+   ```
 
-**Why include `.vscode/extensions.json`?**
+## Usage
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+- Access the dashboard via your browser at `http://localhost:5173/`.
+- Ensure the backend server is running to fetch system statistics.
 
-**Why enable `checkJs` in the JS template?**
+## Roadmap
 
-It is likely that most cases of changing variable types in runtime are likely to be accidental, rather than deliberate. This provides advanced typechecking out of the box. Should you like to take advantage of the dynamically-typed nature of JavaScript, it is trivial to change the configuration.
+- [ ] Add historical data tracking
+- [ ] Implement dark mode
+- [ ] Expand support for additional SBCs
+- [ ] Create a Docker container for easier deployment
 
-**Why is HMR not preserving my local component state?**
+## Contributing
 
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/sveltejs/svelte-hmr/tree/master/packages/svelte-hmr#preservation-of-local-state).
+Feel free to fork and submit pull requests to improve the project!
 
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
+## License
 
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
+This project is licensed under the MIT License.
+
+## Author
+
+Created by **Karniverse**. Reach out for collaboration or suggestions!
+
+
+
+code references:
+https://stackoverflow.com/questions/42471475/fastest-way-to-get-system-uptime-in-python-in-linux
+https://www.geeksforgeeks.org/python-program-to-convert-seconds-into-hours-minutes-and-seconds/
