@@ -1,6 +1,7 @@
 <script>
     import { stats, error } from "../lib/apidata.js"; // Ensure stats and error are stores
     import { onMount } from "svelte";
+    import TopProcesses from "./TopProcesses.svelte";
 
     let Systeminfo = {};
 
@@ -41,7 +42,7 @@
                 <h4 class="label">Uptime</h4>
                 <p>{Systeminfo.uptime}</p>
             </div>
-            <!--Display the uptime -->
+            <TopProcesses />
         </div>
     {/if}
 </div>

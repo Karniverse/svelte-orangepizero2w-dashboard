@@ -100,10 +100,23 @@ def timeformatter(seconds):
 
 # Get top 5 processes by CPU usage
 def get_top_processes():
-    processes = [(p.info['pid'], p.info['name'], p.info['cpu_percent']) 
-                 for p in psutil.process_iter(['pid', 'name', 'cpu_percent'])]
+    num_cores = psutil.cpu_count(logical=True)  # Get total number of cores
+    
+    processes = []
+    for p in psutil.process_iter(['pid', 'name', 'cpu_percent']):
+        try:
+            if p.info['name'] and "idle" in p.info['name'].lower():  # Ignore "System Idle Process"
+                continue  # Skip this process
+            
+            cpu_percent = p.info['cpu_percent'] / num_cores  # Normalize per core
+            processes.append((p.info['pid'], p.info['name'], round(cpu_percent, 2)))
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            continue
+    
     processes.sort(key=lambda x: x[2], reverse=True)  # Sort by CPU usage
     return processes[:5]  # Return top 5 processes
+
+
 
 # System stats endpoint
 @app.get("/api/stats")
