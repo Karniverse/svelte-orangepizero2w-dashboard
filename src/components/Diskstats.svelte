@@ -3,6 +3,7 @@
     import { onMount } from "svelte";
     import PieChart from "../lib/charts/PieChart.svelte";
     import BarChart from "../lib/charts/BarChart.svelte";
+    import RecentFiles from "./RecentFiles.svelte";
 
     let diskData = {
         labels: ["Used (%)", "Free (%)"],
@@ -76,30 +77,42 @@
     {:else if !$stats || !$stats.cpu || !$stats.ram}
         <p>Loading stats...</p>
     {:else}
-        <div class="chart-container">
-            <h2>Disk Usage</h2>
-            <PieChart
-                id="diskChart"
-                data={diskData}
-                options={{ responsive: true }}
-            />
-        </div>
+        <div class="charts-wrapper">
+            <div class="top-charts">
+                <div class="chart-container">
+                    <div class="container-title">Disk Usage</div>
+                    <!--h2>Disk Usage</h2-->
+                    <PieChart
+                        id="diskChart"
+                        data={diskData}
+                        options={{ responsive: true }}
+                    />
+                </div>
 
-        <div class="chart-container">
-            <h2>Disk Read/Write</h2>
-            <BarChart
-                id="diskIOChart"
-                data={diskIOData}
-                options={{
-                    responsive: true,
-                    scales: { y: { beginAtZero: true, max: yAxisMax } },
-                }}
-            />
+                <div class="chart-container">
+                    <div class="container-title">Disk Read/Write</div>
+                    <!--h2>Disk Read/Write</h2-->
+                    <BarChart
+                        id="diskIOChart"
+                        data={diskIOData}
+                        options={{
+                            responsive: true,
+                            scales: { y: { beginAtZero: true, max: yAxisMax } },
+                        }}
+                    />
+                </div>
+            </div>
+            <RecentFiles class="chart-container" />
         </div>
     {/if}
 </div>
 
 <style>
+    .charts-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
     .charts-container {
         display: flex;
         justify-content: space-between;
@@ -107,9 +120,16 @@
         flex-wrap: wrap;
     }
 
+    .top-charts {
+        display: flex;
+        gap: 8px;
+        justify-content: space-between; /* Space evenly */
+        /*height: 600px;*/
+    }
+
     .chart-container {
         background: #fff;
-        padding: 20px;
+        padding: 5px;
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         flex: 1;

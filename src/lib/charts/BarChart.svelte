@@ -2,7 +2,7 @@
     import { onMount, onDestroy } from "svelte";
     import { Chart, registerables } from "chart.js"; // Register all Chart.js components
 
-    Chart.register(...registerables); // Registers all chart types including 'pie'
+    Chart.register(...registerables);
 
     export let data;
     export let options = {};
@@ -34,4 +34,5 @@
     }
 </script>
 
-<canvas bind:this={chartContainer}></canvas>
+<canvas bind:this={chartContainer} style="max-width: 600px; max-height: 600px;"
+></canvas>

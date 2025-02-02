@@ -5,6 +5,9 @@ import psutil
 import time
 import platform
 import cpuinfo
+import os
+import datetime
+import concurrent.futures
 
 app = FastAPI()
 system = platform.system()
@@ -23,6 +26,80 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Proper cross-platform home directory detection
+if platform.system() == "Linux":  # Linux
+    HOME_DIR = os.getenv("HOME", os.path.expanduser("~"))  # /home/username
+else:  # Windows/others
+    HOME_DIR = os.path.expanduser("~")  # C:\Users\YourUsername
+
+MAX_FILES = 5000  # Prevents excessive scanning
+
+# Converts bytes to human-readable format
+def human_readable_size(size_in_bytes):
+    units = ["B", "KB", "MB", "GB", "TB"]
+    size = float(size_in_bytes)
+    unit_index = 0
+
+    while size >= 1024 and unit_index < len(units) - 1:
+        size /= 1024
+        unit_index += 1
+
+    return f"{size:.2f} {units[unit_index]}"
+
+# Converts epoch timestamp to human-readable format
+def human_readable_time(epoch_time):
+    return datetime.datetime.fromtimestamp(epoch_time).strftime("%Y-%m-%d %H:%M:%S")
+
+def scan_directory(directory):
+    files = []
+    try:
+        with os.scandir(directory) as entries:
+            for entry in entries:
+                if entry.is_file():
+                    try:
+                        file_size_bytes = entry.stat().st_size  # Keep size in bytes
+                        file_size_hr = human_readable_size(file_size_bytes)  # Convert to readable size
+                        modified_time = human_readable_time(entry.stat().st_mtime)  # Convert time
+                        full_path = entry.path
+                        
+                        files.append({
+                            "name": entry.name, 
+                            "size": file_size_hr, 
+                            "size_bytes": file_size_bytes,  # Store for sorting
+                            "modified": modified_time,
+                            "path": full_path
+                        })
+                    except Exception as e:
+                        print(f"Error accessing {entry.name}: {e}")
+                if len(files) >= MAX_FILES:
+                    break  # Stop early if too many files
+    except PermissionError:
+        pass  # Ignore folders we don’t have access to
+    return files
+
+def get_top_files():
+    all_files = []
+
+    # Get only top-level directories in home
+    with os.scandir(HOME_DIR) as entries:
+        subdirs = [entry.path for entry in entries if entry.is_dir()]
+
+    # Scan home + top-level directories in parallel
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        results = executor.map(scan_directory, [HOME_DIR] + subdirs)
+
+    # Collect all file data
+    for result in results:
+        all_files.extend(result)
+
+    # Sort by modification time (recent first)
+    recent_files = sorted(all_files, key=lambda x: x["modified"], reverse=True)[:5]
+
+    # Sort by actual file size (in bytes) (largest first)
+    large_files = sorted(all_files, key=lambda x: x["size_bytes"], reverse=True)[:5]
+
+    return {"recent_files": recent_files, "large_files": large_files}
 
 # Cross-platform CPU temperature
 def get_cpu_temperature():
@@ -137,6 +214,7 @@ def get_stats():
     #diskio=psutil.disk_io_counters()
 
     top_processes = get_top_processes()  # Get top 5 processes
+    top_files = get_top_files()
     return {
         "cpu": {
             #"temperature": cpu_temperature,
@@ -174,7 +252,9 @@ def get_stats():
         
         "top_processes": [
             {"pid": p[0], "name": p[1], "cpu_percent": p[2]} for p in top_processes
-        ]
+        ],
+        "filelist":top_files
+        
     }
 
 # Run the server

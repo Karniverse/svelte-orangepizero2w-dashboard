@@ -1,0 +1,39 @@
+.table-container {
+    max-width: 600px;
+    /*max-height: 300px;*/
+    margin: auto;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    color: #333;
+    text-align: center;
+}
+
+.tabletitle {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 1px;
+    background-color: #f0f0f0;
+    border-bottom: 2px solid #ccc;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0px;
+}
+
+th,
+td {
+    padding: 2px;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #459efd;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}

@@ -3,6 +3,7 @@
   import SystemInfo from "./components/SystemInfo.svelte";
   import Diskinfo from "./components/Diskstats.svelte";
   //import TopProcesses from "./components/TopProcesses.svelte";
+  //import Test from "./components/RecentFiles.svelte";
   //import Test from "../temp/Test.svelte";
   //import Test2 from "./components/test2.svelte";
   //import Test3 from "./components/test3.svelte";

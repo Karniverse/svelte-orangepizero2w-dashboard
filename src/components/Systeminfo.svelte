@@ -51,22 +51,20 @@
     .infocontainer {
         display: grid;
         grid-template-columns: 1fr 2fr; /* Labels take 1 part, values take 2 parts */
-        gap: 10px;
+        gap: 10px; /* Add spacing between elements */
         align-items: center;
-        max-width: 500px; /* Adjust width */
+        max-width: 700px; /* Increased width */
         margin: auto; /* Center it */
-        padding: 20px;
+        padding: 20px; /* Add padding */
         background: #f9f9f9;
         border-radius: 10px;
         box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
         color: #333333;
     }
+
     h2 {
-        /*display: grid;
-        grid-template-columns: 1fr 2fr; /* Labels take 1 part, values take 2 parts */
-        /*gap: 10px;*/
         align-items: center;
-        max-width: 500px; /* Adjust width */
+        max-width: 700px; /* Increased width */
         margin: auto; /* Center it */
         padding: 20px;
         background: #f9f9f9;
@@ -74,8 +72,10 @@
         box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
         color: #333333;
     }
+
     .label {
         font-weight: bold;
+        justify-content: left;
         color: #333;
     }
 </style>

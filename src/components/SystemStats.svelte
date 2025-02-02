@@ -103,7 +103,8 @@
         <div class="charts-wrapper">
             <div class="top-charts">
                 <div class="chart-container">
-                    <h2>CPU Usage</h2>
+                    <div class="container-title">CPU Usage</div>
+                    <!-- <h2>CPU Usage</h2> -->
                     <LineChart
                         id="cpuChart"
                         data={cpuData}
@@ -111,7 +112,8 @@
                     />
                 </div>
                 <div class="chart-container">
-                    <h2>Memory Usage</h2>
+                    <div class="container-title">Memory Usage</div>
+                    <!-- <h2>Memory Usage</h2> -->
                     <LineChart
                         id="memoryChart"
                         data={memoryData}
@@ -121,7 +123,8 @@
             </div>
 
             <div class="chart-container">
-                <h2>Network Usage</h2>
+                <div class="container-title">Network Usage</div>
+                <!-- <h2>Network Usage</h2> -->
                 <LineChart
                     id="networkChart"
                     data={networkData}

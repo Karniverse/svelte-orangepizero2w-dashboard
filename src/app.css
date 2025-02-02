@@ -1,6 +1,6 @@
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  line-height: 1;
   font-weight: 400;
 
   color-scheme: light dark;
@@ -20,6 +20,25 @@
   gap: 20px;
 }
 
+#app {
+  max-width: calc(100% - 40px);
+  margin: 0 auto;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.table-container {
+  padding: 9px;
+  font-size: 13px;
+}
+
+.container-title {
+  font-size: 25px;
+  margin-top: 0%;
+  color: #333;
+  text-align: center;
+}
+
 .dashboard {
   display: grid;
   /*grid-template-columns: repeat(auto-fit, minmax(1300px, 1fr));*/
@@ -29,7 +48,7 @@
   /* Space between charts */
   /*max-width: 1200px;*/
   max-width: calc(100% - 140px);
-  margin: 0 auto;
+  margin: auto;
   padding: 10px;
   background: #f9f9f9;
   border-radius: 10px;
@@ -45,7 +64,7 @@
 
 /* Make the disk chart container larger */
 #diskChart {
-  grid-column: span 1;
+  grid-column: span 2;
   /* Make it fit within its own column */
   margin-bottom: 20px;
 }
@@ -55,7 +74,6 @@ h2 {
   color: #333;
   text-align: center;
 }
-
 
 
 a {
@@ -72,25 +90,20 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
-  min-width: 320px;
+  min-width: 100vw;
   min-height: 100vh;
 }
 
 h1 {
   font-size: 3.2em;
-  line-height: 1.1;
+  line-height: 1;
 }
 
 .card {
   padding: 2em;
 }
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
+
 
 button {
   border-radius: 8px;
