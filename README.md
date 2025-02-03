@@ -1,3 +1,5 @@
+![](https://github.com/Karniverse/svelte-orangepizero2w-dashboard/blob/main/public/dash.gif)
+
 ## THIS IS IN ACTIVE DEVELOPEMENT..
 
 # Svelte Linux Dashboard for Orange Pi Zero 2W
