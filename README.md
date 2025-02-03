@@ -34,7 +34,7 @@ _NOTE: i made this keeping orangepi zero 2w in mind, but this should work with a
 1. Clone the repository:
    ```sh
    git clone https://github.com/Karniverse/svelte-orangepizero2w-dashboard.git
-   cd orangepi-dashboard/backend
+   cd svelte-orangepizero2w-dashboard
    ```
 
 ### Backend Setup
