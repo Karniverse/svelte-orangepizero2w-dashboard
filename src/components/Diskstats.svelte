@@ -18,11 +18,11 @@
         ],
     };
 
-    let diskIOData = {
+    let diskIOBytes = {
         labels: ["Read (KB)", "Write (KB)"],
         datasets: [
             {
-                label: "Disk I/O",
+                label: "Disk I/O Bytes",
                 data: [0, 0],
                 backgroundColor: [
                     "rgba(54, 162, 235, 1)", // Blue for read
@@ -33,7 +33,23 @@
         ],
     };
 
-    let yAxisMax = 1500; // Default max value for the Y-axis
+    let diskIOCount = {
+        labels: ["Read", "Write"],
+        datasets: [
+            {
+                label: "Disk I/O Count",
+                data: [0, 0],
+                backgroundColor: [
+                    "rgba(54, 162, 235, 1)", // Blue for read
+                    "rgba(255, 99, 132, 1)", // Red for write
+                ],
+                borderWidth: 0,
+            },
+        ],
+    };
+
+    let yAxisMaxBytes,
+        yAxisMaxCount = 6000; // Default max value for the Y-axis
 
     onMount(() => {
         const interval = setInterval(fetchStats, 1000);
@@ -56,15 +72,19 @@
             // Update Bar Chart Data
             const readBytes = $stats.disk.diskrbytes / Math.pow(1024, 1);
             const writeBytes = $stats.disk.diskwbytes / Math.pow(1024, 1);
+            const readcount = $stats.disk.diskrbytes / Math.pow(1024, 1);
+            const writecount = $stats.disk.diskwbytes / Math.pow(1024, 1);
 
             // Dynamically adjust the Y-axis max value based on the data
-            yAxisMax = Math.max(readBytes, writeBytes) * 1.2; // Set max to 120% of the highest value
+            yAxisMaxBytes = Math.max(readBytes, writeBytes) * 1.2; // Set max to 120% of the highest value
+            yAxisMaxCount = Math.max(readcount, writecount) * 1.2; // Set max to 120% of the highest value
 
-            diskIOData.datasets[0].data = [readBytes, writeBytes];
+            diskIOBytes.datasets[0].data = [readBytes, writeBytes];
+            diskIOCount.datasets[0].data = [readcount, writecount];
 
             // Trigger Svelte reactivity
             diskData = { ...diskData };
-            diskIOData = { ...diskIOData };
+            diskIOBytes = { ...diskIOBytes };
             //yAxisMax = { ...yAxisMax };
             //console.log("Stats data:", $stats.disk.diskrbytes);
         }
@@ -94,10 +114,23 @@
                     <!--h2>Disk Read/Write</h2-->
                     <BarChart
                         id="diskIOChart"
-                        data={diskIOData}
+                        data={diskIOBytes}
                         options={{
                             responsive: true,
-                            scales: { y: { beginAtZero: true, max: yAxisMax } },
+                            scales: {
+                                y: { beginAtZero: true, max: yAxisMaxBytes },
+                            },
+                        }}
+                    />
+                    <!-- <div class="container-title">Disk Read/Write Count</div> -->
+                    <BarChart
+                        id="diskIOCount"
+                        data={diskIOCount}
+                        options={{
+                            responsive: true,
+                            scales: {
+                                y: { beginAtZero: true, max: yAxisMaxCount },
+                            },
                         }}
                     />
                 </div>

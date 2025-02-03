@@ -13,7 +13,7 @@
     onMount(() => {
         const ctx = chartContainer.getContext("2d");
         chart = new Chart(ctx, {
-            type: "bar", // Pie chart type
+            type: "bar", // Bar chart type
             data,
             options,
         });
@@ -34,5 +34,5 @@
     }
 </script>
 
-<canvas bind:this={chartContainer} style="max-width: 600px; max-height: 600px;"
+<canvas bind:this={chartContainer} style="max-width: 600px; max-height: 800px;"
 ></canvas>

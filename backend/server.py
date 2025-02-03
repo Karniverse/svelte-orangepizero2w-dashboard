@@ -124,24 +124,32 @@ def get_cpu_temperature():
         return 0
 
 # Cross-platform CPU frequency
+# def get_cpu_freq():
+#     #system = platform.system()
+#     if system == "Linux":
+#         try:
+#             output = subprocess.check_output("vcgencmd measure_clock arm | cut -d '=' -f 2", shell=True)
+#             return int(output.decode("utf-8")) / 1000000
+#         except Exception as e:
+#             print(f"Error fetching CPU frequency (Linux): {e}")
+#             return 0
+#     elif system == "Windows":
+#         try:
+#             output = subprocess.check_output("wmic cpu get CurrentClockSpeed", shell=True)
+#             return float(output.decode("utf-8").split("\n")[1].strip())
+#         except Exception as e:
+#             print(f"Error fetching CPU frequency (Windows): {e}")
+#             return 0
+#     else:
+#         print("Unsupported OS for CPU frequency")
+#         return 0
+
 def get_cpu_freq():
-    #system = platform.system()
-    if system == "Linux":
-        try:
-            output = subprocess.check_output("vcgencmd measure_clock arm | cut -d '=' -f 2", shell=True)
-            return int(output.decode("utf-8")) / 1000000
-        except Exception as e:
-            print(f"Error fetching CPU frequency (Linux): {e}")
-            return 0
-    elif system == "Windows":
-        try:
-            output = subprocess.check_output("wmic cpu get CurrentClockSpeed", shell=True)
-            return float(output.decode("utf-8").split("\n")[1].strip())
-        except Exception as e:
-            print(f"Error fetching CPU frequency (Windows): {e}")
-            return 0
-    else:
-        print("Unsupported OS for CPU frequency")
+    try:
+        freq = psutil.cpu_freq().current  # Get current CPU frequency in MHz
+        return freq
+    except Exception as e:
+        print(f"Error fetching CPU frequency: {e}")
         return 0
 
 #calculating network usuage
@@ -159,8 +167,10 @@ def calculate_disk_usage():
     current_disk_counters = psutil.disk_io_counters()
     read_speed = (current_disk_counters.read_bytes - previous_disk_counters.read_bytes)
     write_speed = (current_disk_counters.write_bytes - previous_disk_counters.write_bytes)
+    read_count = (current_disk_counters.read_count - previous_disk_counters.read_count)
+    write_count = (current_disk_counters.write_count - previous_disk_counters.write_count)
     previous_disk_counters = current_disk_counters  # Update the previous counters
-    return read_speed, write_speed
+    return read_speed, write_speed, read_count, write_count
 
 def calculate_network_usage():
     global previous_counters
@@ -206,7 +216,7 @@ def get_stats():
     ram = psutil.virtual_memory()
     #print(f"RAM Used: {ram.used} bytes")
     diskusage = psutil.disk_usage("/")
-    read_speed, write_speed = calculate_disk_usage()
+    read_speed, write_speed, read_count, write_count = calculate_disk_usage()
     upload_speed, download_speed = calculate_network_usage()
     #print(f"Netwrok Usage: {network.used} bytes")
     # #print(f"Disk Used: {disk.used} bytes")
@@ -237,6 +247,8 @@ def get_stats():
             "percent": diskusage.percent,
             "diskrbytes":read_speed,
             "diskwbytes":write_speed,
+            "diskrcount":read_count,
+            "diskwcount":write_count,
         },
         "systeminfo":{
             "processor":cpu_name,
